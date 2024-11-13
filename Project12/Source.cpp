@@ -1,11 +1,13 @@
 #include <iostream>
 #include <json.hpp>
+#include<string>
 #include <fstream>
 using namespace std;
 using json = nlohmann::json;
 
 struct PCB
 {
+    string id;
     int priority;
     float cpuBurstTime;
     float arrivalTime;
@@ -114,6 +116,23 @@ public:
         }
         length--;
     }
+    node* deleteFromBegin() {
+        if (length == 0) {  
+            std::cout << "List is already empty!" << std::endl;
+        
+        }
+
+        node* temp = head;  
+        head = head->next; 
+       
+
+        if (head == nullptr) {  
+            tail = nullptr;  
+        }
+
+        length--; 
+        return temp;
+    }
 
     int getLength()
     {
@@ -125,14 +144,19 @@ public:
         node* a = head;
         while (a != nullptr)
         {
-            cout << "Priority: " << a->data.priority
+            cout << "ID: " << a->data.id
+                << " Priority: " << a->data.priority
                 << ", CPU Burst Time: " << a->data.cpuBurstTime
                 << ", Arrival Time: " << a->data.arrivalTime
                 << ", Time Slice: " << a->data.timeSlice << endl;
             a = a->next;
         }
-        cout << endl;
+     
+        
+
+
     }
+ 
 };
 
 class queue
@@ -147,9 +171,15 @@ public:
         cout << "Process added successfully\n";
     }
 
-    void pull()
+    PCB pull()
     {
-        readyQueue.deleteNode();
+        if (readyQueue.getLength() == 0)
+        {
+            cout << "it's empty";  
+        }
+        else
+
+       return readyQueue.deleteFromBegin()->data;
     }
 
     int numberOfProcesses()
@@ -161,6 +191,13 @@ public:
     {
         readyQueue.printLinkedList();
     }
+    bool isEmpty()
+    {
+        int x = readyQueue.getLength();
+        if (x == 0)
+            return true;
+        else return false;
+    }
 };
 
 void FCFS(const json& processesData, queue& readyQueue)
@@ -168,12 +205,50 @@ void FCFS(const json& processesData, queue& readyQueue)
     for (const auto& process : processesData)
     {
         PCB pcb;
+        pcb.id = process.value("id","\t");
         pcb.priority = process.value("priority", 0);
         pcb.cpuBurstTime = process.value("cpuBurstTime", 0.0f);
         pcb.arrivalTime = process.value("arrivalTime", 0.0f);
         pcb.timeSlice = process.value("timeSlice", 0);
         readyQueue.push(pcb);
     }
+    cout << "Gantt chart : \n";
+    float termiation = 0.0f;
+    float turnArround = 0.0f;
+    float waitingTime = 0.0f;
+    int numberOfProcesses = readyQueue.numberOfProcesses();
+    if (readyQueue.numberOfProcesses() == 0)
+    {
+        cout << "empty!";
+    }
+    else {
+        PCB temp = readyQueue.pull();
+        termiation = temp.arrivalTime + temp.cpuBurstTime;
+
+        cout << temp.id << " " << "from : " << temp.arrivalTime << " to : " << temp.cpuBurstTime<<endl;
+        waitingTime += 0;
+        turnArround += temp.cpuBurstTime;
+        if (readyQueue.numberOfProcesses()!=0)
+        while (!readyQueue.isEmpty())
+        {
+            PCB temp = readyQueue.pull();
+            
+            cout << temp.id << " " << "from : " << termiation;
+            waitingTime += termiation - temp.arrivalTime;
+            termiation += temp.cpuBurstTime;
+            turnArround += termiation - temp.arrivalTime;
+
+            cout << " to : " << termiation << endl;
+
+        }
+        cout << "The Avarrage waiting time " << waitingTime / numberOfProcesses << endl;
+        cout << "The Avarage turnarround time " << turnArround / numberOfProcesses << endl;
+
+
+    }
+
+   
+
 }
 
 void SRT(const json& processesData, queue& readyQueue)
@@ -188,6 +263,7 @@ void SRT(const json& processesData, queue& readyQueue)
 
         readyQueue.push(pcb);
     }
+
 }
 
 void RR(const json& processesData, queue& readyQueue)
@@ -217,8 +293,7 @@ int main()
 
     queue readyQueue;
     FCFS(data, readyQueue);
-
-    cout << "Processes in the queue:" << endl;
     readyQueue.printQueue();
+
     return 0;
 }

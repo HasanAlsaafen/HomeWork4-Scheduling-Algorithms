@@ -23,9 +23,6 @@
     <None Include="process.json">
       <Filter>Source Files</Filter>
     </None>
-    <None Include=".gitignore">
-      <Filter>Source Files\Resource Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\json.hpp">

@@ -133,7 +133,6 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include=".gitignore" />
     <None Include="process.json" />
   </ItemGroup>
   <ItemGroup>
