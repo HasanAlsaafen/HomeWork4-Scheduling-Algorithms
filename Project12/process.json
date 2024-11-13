@@ -1,0 +1,20 @@
+[
+  {
+    "priority": 1,
+    "cpuBurstTime": 3.5,
+    "arrivalTime": 0.0,
+    "timeSlice": 2
+  },
+  {
+    "priority": 2,
+    "cpuBurstTime": 4.0,
+    "arrivalTime": 1.0,
+    "timeSlice": 2
+  },
+  {
+    "priority": 3,
+    "cpuBurstTime": 2.5,
+    "arrivalTime": 2.0,
+    "timeSlice": 2
+  }
+]
