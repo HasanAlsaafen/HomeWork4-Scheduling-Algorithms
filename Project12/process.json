@@ -2,7 +2,7 @@
   {
     "id": "p1",
     "priority": 1,
-    "cpuBurstTime": 3.5,
+    "cpuBurstTime": 8.0,
     "arrivalTime": 0.0,
     "timeSlice": 2
   },
@@ -16,8 +16,15 @@
   {
     "id": "p3",
     "priority": 3,
-    "cpuBurstTime": 2.5,
+    "cpuBurstTime": 9.0,
     "arrivalTime": 2.0,
+    "timeSlice": 2
+  },
+  {
+    "id": "p4",
+    "priority": 3,
+    "cpuBurstTime": 5.0,
+    "arrivalTime": 3.0,
     "timeSlice": 2
   }
 ]

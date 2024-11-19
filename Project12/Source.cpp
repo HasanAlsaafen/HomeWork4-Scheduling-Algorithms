@@ -1,5 +1,6 @@
 #include <iostream>
 #include <json.hpp>
+#include <cfloat> 
 #include<string>
 #include <fstream>
 using namespace std;
@@ -10,6 +11,7 @@ struct PCB
     string id;
     int priority;
     float cpuBurstTime;
+    float originalCpuBurstTime;
     float arrivalTime;
     int timeSlice;
 };
@@ -88,6 +90,26 @@ public:
 
         length++;
     }
+    void addNodeWithoutOrder(PCB n)
+    {
+        node* newNode = new node;
+        newNode->data = n;
+        newNode->next = nullptr;
+
+        if (length == 0)
+        {
+            head = newNode;
+            tail = newNode;
+        }
+        else
+        {
+            tail->next = newNode;  
+            tail = newNode;        
+        }
+
+        length++;
+    }
+
 
     void deleteNode()
     {
@@ -116,10 +138,10 @@ public:
         }
         length--;
     }
-    node* deleteFromBegin() {
+        node* deleteFromBegin() {
         if (length == 0) {  
             std::cout << "List is already empty!" << std::endl;
-        
+            return nullptr;
         }
 
         node* temp = head;  
@@ -151,9 +173,7 @@ public:
                 << ", Time Slice: " << a->data.timeSlice << endl;
             a = a->next;
         }
-     
-        
-
+ 
 
     }
  
@@ -168,7 +188,11 @@ public:
     void push(PCB process)
     {
         readyQueue.addNode(process);
-        cout << "Process added successfully\n";
+      
+    }
+    void pushWithoutOrder(PCB process)
+    {
+        readyQueue.addNodeWithoutOrder(process);
     }
 
     PCB pull()
@@ -178,10 +202,10 @@ public:
             cout << "it's empty";  
         }
         else
-
-       return readyQueue.deleteFromBegin()->data;
+        {
+            return readyQueue.deleteFromBegin()->data;
+        }
     }
-
     int numberOfProcesses()
     {
         return readyQueue.getLength();
@@ -198,8 +222,22 @@ public:
             return true;
         else return false;
     }
+  
 };
+class circularQueue {
 
+private:
+    int length = 0;
+    PCB arrar[10];
+
+
+
+
+
+
+
+
+};
 void FCFS(const json& processesData, queue& readyQueue)
 {
     for (const auto& process : processesData)
@@ -243,12 +281,7 @@ void FCFS(const json& processesData, queue& readyQueue)
         }
         cout << "The Avarrage waiting time " << waitingTime / numberOfProcesses << endl;
         cout << "The Avarage turnarround time " << turnArround / numberOfProcesses << endl;
-
-
     }
-
-   
-
 }
 
 void SRT(const json& processesData, queue& readyQueue)
@@ -256,18 +289,86 @@ void SRT(const json& processesData, queue& readyQueue)
     for (const auto& process : processesData)
     {
         PCB pcb;
+        pcb.id = process.value("id", "");
         pcb.priority = process.value("priority", 0);
         pcb.cpuBurstTime = process.value("cpuBurstTime", 0.0f);
+        pcb.originalCpuBurstTime = pcb.cpuBurstTime; 
         pcb.arrivalTime = process.value("arrivalTime", 0.0f);
-        pcb.timeSlice = process.value("timeSlice", 0);
-
         readyQueue.push(pcb);
     }
 
+    cout << "Gantt Chart: " << endl;
+
+    float currentTime = 0.0;
+    float totalWaitingTime = 0.0;
+    float totalTurnaroundTime = 0.0;
+    int completedProcesses = 0;
+    int numberOfProcesses = readyQueue.numberOfProcesses();
+
+    while (completedProcesses < numberOfProcesses)
+    {
+        PCB shortestProcess;
+        bool found = false;
+
+        int queueLength = readyQueue.numberOfProcesses();
+        for (int i = 0; i < queueLength; ++i)
+        {
+            PCB temp = readyQueue.pull();
+            if (temp.arrivalTime <= currentTime)
+            {
+                if (!found || temp.cpuBurstTime < shortestProcess.cpuBurstTime)
+                {
+                    if (found)
+                        readyQueue.pushWithoutOrder(shortestProcess);
+
+                    shortestProcess = temp;
+                    found = true;
+                }
+                else
+                {
+                    readyQueue.pushWithoutOrder(temp);
+                }
+            }
+            else
+            {
+                readyQueue.pushWithoutOrder(temp);
+            }
+        }
+
+        if (!found)
+        {
+            currentTime++;
+            continue;
+        }
+
+        cout << shortestProcess.id << " runs from " << currentTime << " to " << (currentTime + 1) << endl;
+        shortestProcess.cpuBurstTime -= 1;
+        currentTime += 1;
+
+        if (shortestProcess.cpuBurstTime > 0)
+        {
+            readyQueue.pushWithoutOrder(shortestProcess);
+        }
+        else
+        {
+            completedProcesses++;
+            float turnaroundTime = currentTime - shortestProcess.arrivalTime;
+            float waitingTime = turnaroundTime - shortestProcess.originalCpuBurstTime;
+
+            totalTurnaroundTime += turnaroundTime;
+            totalWaitingTime += waitingTime;
+        }
+    }
+
+    cout << "Average Turnaround Time: " << totalTurnaroundTime / numberOfProcesses << endl;
+    cout << "Average Waiting Time: " << totalWaitingTime / numberOfProcesses << endl;
 }
+
+
 
 void RR(const json& processesData, queue& readyQueue)
 {
+    
     for (const auto& process : processesData)
     {
         PCB pcb;
@@ -275,9 +376,11 @@ void RR(const json& processesData, queue& readyQueue)
         pcb.cpuBurstTime = process.value("cpuBurstTime", 0.0f);
         pcb.arrivalTime = process.value("arrivalTime", 0.0f);
         pcb.timeSlice = process.value("timeSlice", 0);
-
         readyQueue.push(pcb);
-    }
+    } 
+
+
+
 }
 
 int main()
@@ -289,11 +392,10 @@ int main()
         return 1;
     }
 
-    cout << "Data loaded from JSON:" << endl;
-
     queue readyQueue;
-    FCFS(data, readyQueue);
-    readyQueue.printQueue();
+
+    SRT(data, readyQueue);
 
     return 0;
 }
+
