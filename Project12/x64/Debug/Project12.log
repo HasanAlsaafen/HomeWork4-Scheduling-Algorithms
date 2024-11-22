@@ -1,4 +1,4 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (Project12.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   Source.cpp
-C:\Users\hasan\source\repos\Project12\Project12\Source.cpp(208,1): warning C4715: 'queue::pull': not all control paths return a value
+C:\Users\hasan\source\repos\Project12\Project12\Source.cpp(214,1): warning C4715: 'queue::pull': not all control paths return a value
   Project12.vcxproj -> C:\Users\hasan\source\repos\Project12\x64\Debug\HomeWork4.exe

@@ -2,29 +2,29 @@
   {
     "id": "p1",
     "priority": 1,
-    "cpuBurstTime": 8.0,
+    "cpuBurstTime": 6.0,
     "arrivalTime": 0.0,
-    "timeSlice": 2
+    "timeSlice": 4
   },
   {
     "id": "p2",
     "priority": 2,
-    "cpuBurstTime": 4.0,
-    "arrivalTime": 1.0,
-    "timeSlice": 2
+    "cpuBurstTime": 8.0,
+    "arrivalTime": 0.0,
+    "timeSlice": 4
   },
   {
     "id": "p3",
     "priority": 3,
-    "cpuBurstTime": 9.0,
-    "arrivalTime": 2.0,
-    "timeSlice": 2
+    "cpuBurstTime": 7.0,
+    "arrivalTime": 0.0,
+    "timeSlice": 4
   },
   {
     "id": "p4",
     "priority": 3,
-    "cpuBurstTime": 5.0,
-    "arrivalTime": 3.0,
-    "timeSlice": 2
+    "cpuBurstTime": 3.0,
+    "arrivalTime": 0.0,
+    "timeSlice": 4
   }
 ]
